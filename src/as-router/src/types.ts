@@ -1,8 +1,8 @@
 // Type definitions for the attestation service
 
-export type AttestationServiceProvider = 'google' | 'alibaba' | 'trustee';
+export type AttestationServiceProvider = 'alibaba' | 'trustee';
 
-export type TeeTechnology = 'tdx' | 'sgx' | 'sev' | 'cvm';
+export type TeeType = 'tdx' | 'sgx' | 'sev' | 'cvm' | 'all';
 
 export interface QuoteVerificationResult {
   verified: boolean;

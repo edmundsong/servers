@@ -1,8 +1,9 @@
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
+import { CallToolRequest } from "@modelcontextprotocol/sdk/types.js";
 import { AttestationServiceProvider } from './types.js';
-import { AlibabaAttestationService } from './services/alibaba-wrapper.js';
-import { AttestationError, formatAttestationError } from './errors.js';
+import { AlibabaASWrapper } from './services/alibaba-wrapper';
+import { AttestationError, formatAttestationError } from './errors';
 
 // Define schemas
 export const VerifyQuoteSchema = z.object({
@@ -17,7 +18,7 @@ export const GetServiceStatusSchema = z.object({
 });
 
 export const SupportedTeeSchema = z.object({
-  technology: z.enum(['tdx', 'sgx']),
+  technology: z.enum(['tdx', 'sgx', 'all']),
 });
 
 export const FetchQuoteSchema = z.object({
@@ -32,8 +33,8 @@ export const ParseQuoteSchema = z.object({
 
 // Service provider registry
 const serviceProviders = {
-  alibaba: new AlibabaAttestationService(),
-  //trustee: new TrusteeAttestationService(),
+  alibaba: new AlibabaASWrapper(),
+  trustee: null,//new TrusteeAttestationService(),
 };
 
 // Request handler
@@ -70,7 +71,7 @@ export const handleRequest = {
     };
   },
 
-  callTool: async (request) => {
+  callTool: async (request: CallToolRequest) => {
     try {
       if (!request.params.arguments) {
         throw new Error("Arguments are required");
@@ -78,7 +79,7 @@ export const handleRequest = {
 
       switch (request.params.name) {
         case "verify_quote": {
-          const args = VerifyTdxQuoteSchema.parse(request.params.arguments);
+          const args = VerifyQuoteSchema.parse(request.params.arguments);
           const provider = serviceProviders[args.provider as AttestationServiceProvider];
           
           if (!provider) {
@@ -113,6 +114,9 @@ export const handleRequest = {
             // Gather all provider support information
             result = await Promise.all(
               Object.entries(serviceProviders).map(async ([name, provider]) => {
+	       if (!provider) {
+          		  throw new Error(`Provider ${name} is not available`);
+                }		  
                 const support = await provider.getSupportedTee();
                 return { provider: name, ...support };
               })
@@ -121,6 +125,9 @@ export const handleRequest = {
             // Check specific technology support across providers
             result = await Promise.all(
               Object.entries(serviceProviders).map(async ([name, provider]) => {
+ if (!provider) {
+          		  throw new Error(`Provider ${name} is not available`);
+                }	      
                 const support = await provider.isTeeSupported(args.technology);
                 return { provider: name, technology: args.technology, supported: support };
               })
@@ -133,15 +140,17 @@ export const handleRequest = {
         }
         case "fetch_quote": {
             const args = FetchQuoteSchema.parse(request.params.arguments);
+	    /*
             const quote = await fetchLocalQuote(args.teeType || 'tdx', args.nonce, args.userData);
+	    */
             return {
-              content: [{ type: "text", text: JSON.stringify({ quote }, null, 2) }],
+              content: [{ type: "text", text: JSON.stringify("fetchLocalQuote not exist, to be added", null, 2) }],
             };
         }
   
         case "parse_quote": {
             const args = ParseQuoteSchema.parse(request.params.arguments);
-            const parsedQuote = await parseQuote(args.quote);
+            const parsedQuote = "parseQuote not exist, TBD" ; //= await parseQuote(args.quote);
             return {
               content: [{ type: "text", text: JSON.stringify(parsedQuote, null, 2) }],
             };

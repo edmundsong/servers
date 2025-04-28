@@ -5,8 +5,8 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
-import { router } from "./router.js";
-import { VERSION } from "./common/version.js";
+import { handleRequest as router } from "./router";
+import { VERSION } from "./version";
 
 // Initialize the MCP server
 const server = new Server(
@@ -20,6 +20,7 @@ const server = new Server(
     },
   }
 );
+
 
 // Register request handlers
 server.setRequestHandler(ListToolsRequestSchema, router.listTools);

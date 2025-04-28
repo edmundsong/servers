@@ -1,8 +1,15 @@
 {
     "scripts": {
-      "build": "tsc",
-      "start": "node dist/index.js",
-      "dev": "ts-node src/index.ts",
-      "test": "jest"
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "dev": "ts-node src/index.ts",
+        "test": "jest"
+    },
+    "devDependencies": {
+        "@types/node-fetch": "^3.0.3"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.10.2",
+        "node-fetch": "^3.3.2"
     }
-  }
+}

@@ -1,8 +1,9 @@
-import { BaseAttestationService } from './base-service.js';
-import { QuoteVerificationResult } from '../types.js';
-import { MalformedQuoteError, ProviderUnavailableError, QuoteValidationError } from '../errors.js';
-import fetch from 'node-fetch';
-
+import { BaseAttestationService } from './base-service';
+import { QuoteVerificationResult } from '../types';
+import { MalformedQuoteError, ProviderUnavailableError, QuoteValidationError } from '../errors';
+import { CONFIG } from '../config';
+//import fetch  from 'node-fetch';
+//const fetch = (await import('node-fetch')).default;
 export class AlibabaASWrapper extends BaseAttestationService {
   private apiEndpoint: string;
   private apiKey?: string;
@@ -24,7 +25,7 @@ export class AlibabaASWrapper extends BaseAttestationService {
       this.validateQuoteFormat(quote);
       // Prepare the evidence object
       const evidence = {
-        quote: quoteBase64,
+        quote: quote,
         aa_eventlog: null,
         cc_eventlog: null,
       };
@@ -39,6 +40,7 @@ export class AlibabaASWrapper extends BaseAttestationService {
         tee: 'tdx',
         evidence: evidenceBase64,
       };
+       const fetch = (await import('node-fetch')).default;
       const response = await fetch(this.apiEndpoint, {
         method: 'POST',
         headers: {
@@ -46,7 +48,8 @@ export class AlibabaASWrapper extends BaseAttestationService {
         },
         body: JSON.stringify(requestPayload),
       });
-      
+     
+
       if (!response.ok) {
         const errorText = await response.text();
         throw new QuoteValidationError(`Alibaba attestation failed: ${response.statusText}`, { 

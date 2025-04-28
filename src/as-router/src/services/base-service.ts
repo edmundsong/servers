@@ -1,11 +1,11 @@
-import { AttestationService, QuoteVerificationResult, ServiceStatus, TeeSupport, TeeTechnology } from '../types.js';
+import { AttestationService, QuoteVerificationResult, ServiceStatus, TeeSupport, TeeType } from '../types.js';
 import { ProviderUnavailableError, UnsupportedTeeError } from '../errors.js';
 
 export abstract class BaseAttestationService implements AttestationService {
   protected name: string;
-  protected supportedTypes: TeeTypes[];
+  protected supportedTypes: TeeType[];
   
-  constructor(name: string, supportedTypes: TeeTypes[]) {
+  constructor(name: string, supportedTypes: TeeType[]) {
     this.name = name;
     this.supportedTypes = supportedTypes;
   }
@@ -35,7 +35,7 @@ export abstract class BaseAttestationService implements AttestationService {
   
   async getSupportedTee(): Promise<TeeSupport> {
     return {
-    ] supportedTypes: this.supportedTypes,
+     supportedTypes: this.supportedTypes,
     };
   }
   
